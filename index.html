@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post-Task Evaluation</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f9fafb;
+            --card: #ffffff;
+            --text: #111827;
+            --text-muted: #4b5563;
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto 40px auto;
+        }
+
+        .header-card {
+            background: var(--card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-top: 8px solid var(--primary);
+            margin-bottom: 24px;
+        }
+
+        h1 { margin: 0 0 12px 0; font-size: 28px; }
+        h2 { margin: 0 0 16px 0; font-size: 20px; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        p { margin: 0; color: var(--text-muted); font-size: 15px; }
+
+        .card {
+            background: var(--card);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .question-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        /* NASA-TLX Slider Styling */
+        .slider-container {
+            position: relative;
+            padding: 10px 0;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .range-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--border);
+            outline: none;
+            margin: 15px 0;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .range-slider::-webkit-slider-thumb:hover {
+            background: var(--primary-hover);
+        }
+
+        .ticks {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 6px;
+        }
+
+        .ticks span {
+            width: 2px;
+            height: 8px;
+            background: #cbd5e1;
+            display: inline-block;
+        }
+
+        .current-value {
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-top: 4px;
+        }
+
+        /* UEEQ Likert Grid Styling */
+        .likert-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .likert-row:last-child {
+            border-bottom: none;
+        }
+
+        .left-label, .right-label {
+            width: 120px;
+            font-size: 14px;
+        }
+
+        .left-label { text-align: left; font-weight: 500; }
+        .right-label { text-align: right; font-weight: 500; }
+
+        .radio-group {
+            display: flex;
+            justify-content: space-between;
+            flex-grow: 1;
+            max-width: 360px;
+            padding: 0 10px;
+        }
+
+        .radio-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .radio-container input {
+            margin: 0;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover { background: var(--primary-hover); }
+
+        .result-box {
+            display: none;
+            background: #e0e7ff;
+            border: 2px dashed var(--primary);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .code-output {
+            font-family: monospace;
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            display: block;
+            margin: 12px 0;
+            font-size: 14px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header-card">
+        <h1>Post-Task Evaluation</h1>
+        <p>Thank you for completing the task! Please complete these two brief standardized questionnaires based on the interface experience you just had. It takes about 5–6 minutes.</p>
+    </div>
+
+    <form id="surveyForm">
+        <!-- PART 1: NASA-TLX -->
+        <div class="card">
+            <h2>Part 1: Task Workload (NASA-TLX)</h2>
+            <p style="margin-bottom: 20px;">Please rate the workload of the task on the scales below (0 to 100 with a step of 5).</p>
+        </div>
+
+        <!-- MD -->
+        <div class="card">
+            <div class="question-title">Mental Demand</div>
+            <div class="question-desc">How much mental and perceptual activity was required (e.g., thinking, deciding, calculating, remembering, looking, searching)?</div>
+            <div class="slider-container">
+                <div class="slider-labels"><span>Very Low</span><span>Very High</span></div>
+                <input type="range" class="range-slider tlx-slider" min="0" max="100" step="5" value="50" oninput="updateVal(this)">
+                <div class="ticks"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                <div class="current-value">Score: <span>50</span></div>
+            </div>
+        </div>
+
+        <!-- PD -->
+        <div class="card">
+            <div class="question-title">Physical Demand</div>
+            <div class="question-desc">How much physical activity was required (e.g., clicking, scrolling, typing)?</div>
+            <div class="slider-container">
+                <div class="slider-labels"><span>Very Low</span><span>Very High</span></div>
+                <input type="range" class="range-slider tlx-slider" min="0" max="100" step="5" value="50" oninput="updateVal(this)">
+                <div class="ticks"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                <div class="current-value">Score: <span>50</span></div>
+            </div>
+        </div>
+
+        <!-- TD -->
+        <div class="card">
+            <div class="question-title">Temporal Demand</div>
+            <div class="question-desc">How much time pressure did you feel due to the rate or pace at which the tasks occurred?</div>
+            <div class="slider-container">
+                <div class="slider-labels"><span>Very Low</span><span>Very High</span></div>
+                <input type="range" class="range-slider tlx-slider" min="0" max="100" step="5" value="50" oninput="updateVal(this)">
+                <div class="ticks"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                <div class="current-value">Score: <span>50</span></div>
+            </div>
+        </div>
+
+        <!-- OP -->
+        <div class="card">
+            <div class="question-title">Performance</div>
+            <div class="question-desc">How successful do you think you were in accomplishing the goals of the task? How satisfied were you?</div>
+            <div class="slider-container">
+                <div class="slider-labels"><span>Perfect</span><span>Failure</span></div>
+                <input type="range" class="range-slider tlx-slider" min="0" max="100" step="5" value="50" oninput="updateVal(this)">
+                <div class="ticks"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                <div class="current-value">Score: <span>50</span></div>
+            </div>
+        </div>
+
+        <!-- EF -->
+        <div class="card">
+            <div class="question-title">Effort</div>
+            <div class="question-desc">How hard did you have to work (mentally and physically) to accomplish your level of performance?</div>
+            <div class="slider-container">
+                <div class="slider-labels"><span>Very Low</span><span>Very High</span></div>
+                <input type="range" class="range-slider tlx-slider" min="0" max="100" step="5" value="50" oninput="updateVal(this)">
+                <div class="ticks"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                <div class="current-value">Score: <span>50</span></div>
+            </div>
+        </div>
+
+        <!-- FR -->
+        <div class="card">
+            <div class="question-title">Frustration Level</div>
+            <div class="question-desc">How insecure, discouraged, irritated, stressed, and annoyed versus secure, gratified, content, relaxed did you feel?</div>
+            <div class="slider-container">
+                <div class="slider-labels"><span>Very Low</span><span>Very High</span></div>
+                <input type="range" class="range-slider tlx-slider" min="0" max="100" step="5" value="50" oninput="updateVal(this)">
+                <div class="ticks"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                <div class="current-value">Score: <span>50</span></div>
+            </div>
+        </div>
+
+
+        <!-- PART 2: UEEQ -->
+        <div class="card">
+            <h2>Part 2: Interface Evaluation (UEEQ)</h2>
+            <p style="margin-bottom: 20px;">Please rate your impression of the interface by selecting the point on the scale that best represents your experience between the two opposite qualities.</p>
+            
+            <div id="ueeqContainer"></div>
+        </div>
+
+        <button type="button" class="btn" onclick="generateCode()">Generate Response Code</button>
+    </form>
+
+    <div id="resultBox" class="result-box">
+        <h3 style="margin: 0; color: var(--primary);">Thank you!</h3>
+        <p style="margin: 4px 0 12px 0;">Please copy the code below and paste it into the primary task form:</p>
+        <span id="codeOutput" class="code-output"></span>
+        <button type="button" class="btn" style="padding: 8px; font-size: 14px; background: #312e81;" onclick="copyCode()">Copy Code to Clipboard</button>
+    </div>
+</div>
+
+<script>
+    function updateVal(slider) {
+        slider.parentElement.querySelector('.current-value span').innerText = slider.value;
+    }
+
+    const ueeqPairs = [
+        ["inefficient", "efficient"], ["interesting", "not interesting"], ["clear", "confusing"],
+        ["enjoyable", "annoying"], ["organized", "cluttered"], ["addictive", "non-addictive"],
+        ["supportive", "obstructive"], ["pressuring", "suggesting"], ["boring", "exciting"],
+        ["revealed", "covert"], ["complicated", "easy"], ["unpredictable", "predictable"],
+        ["friendly", "unfriendly"], ["deceptive", "benevolent"]
+    ];
+
+    const ueeqContainer = document.getElementById('ueeqContainer');
+    ueeqPairs.forEach((pair, idx) => {
+        let row = document.createElement('div');
+        row.className = 'likert-row';
+        row.innerHTML = `<span class="left-label">${pair[0]}</span><div class="radio-group"></div><span class="right-label">${pair[1]}</span>`;
+        
+        let group = row.querySelector('.radio-group');
+        for(let i=1; i<=7; i++) {
+            group.innerHTML += `
+                <label class="radio-container">
+                    <input type="radio" name="ueeq_${idx}" value="${i}" required>
+                </label>
+            `;
+        }
+        ueeqContainer.appendChild(row);
+    });
+
+    function generateCode() {
+        const form = document.getElementById('surveyForm');
+        if (!form.checkValidity()) {
+            alert("Please answer all UEEQ questions before submitting.");
+            return;
+        }
+
+        let tlxValues = Array.from(document.querySelectorAll('.tlx-slider')).map(s => s.value);
+        let ueeqValues = [];
+        for(let idx=0; idx<ueeqPairs.length; idx++) {
+            let selected = document.querySelector(`input[name="ueeq_${idx}"]:checked`);
+            ueeqValues.push(selected ? selected.value : "0");
+        }
+
+        let finalCode = `TLX[${tlxValues.join(",")}]|UEEQ[${ueeqValues.join(",")}]`;
+        document.getElementById('codeOutput').innerText = finalCode;
+        document.getElementById('resultBox').style.display = 'block';
+        document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyCode() {
+        let codeText = document.getElementById('codeOutput').innerText;
+        navigator.clipboard.writeText(codeText).then(() => {
+            alert("Code copied successfully!");
+        });
+    }
+</script>
+
+</body>
+</html>
